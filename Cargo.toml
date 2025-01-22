@@ -14,6 +14,6 @@ opt-level = 3
 
 [dependencies]
 anyhow = "1.0.95"
-bevy = { version = "0.15.1" }
+bevy = { version = "0.15.1", features = ["jpeg", "mp3", "flac", "wav"] }
 rosu-map = "0.2.0"
 thiserror = "2.0.11"

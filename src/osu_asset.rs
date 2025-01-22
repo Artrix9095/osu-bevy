@@ -23,11 +23,14 @@ impl AssetLoader for OsuAssetLoader {
         _load_context: &mut LoadContext<'_>,
     ) -> Result<Self::Asset> {
         let mut bytes = Vec::new();
-        reader.read_to_end(&mut bytes).await.unwrap();
-        let map = from_bytes(&bytes).unwrap();
+        reader.read_to_end(&mut bytes).await?;
+        let map = from_bytes(&bytes)?;
 
         let asset = OsuFile(map);
 
         Ok(asset)
+    }
+    fn extensions(&self) -> &[&str] {
+        &["osu"]
     }
 }

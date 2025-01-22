@@ -12,5 +12,5 @@ impl Plugin for CameraPlugin {
 }
 // Setup a 2d camera
 fn setup_camera(mut commands: Commands) {
-    commands.spawn((Camera2dBundle::default(), MainCamera));
+    commands.spawn((Camera2d, MainCamera));
 }
