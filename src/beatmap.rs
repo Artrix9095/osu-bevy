@@ -1,5 +1,5 @@
 use crate::osu_asset::OsuFile;
-use bevy::{asset::LoadedFolder, prelude::*};
+use bevy::prelude::*;
 
 #[derive(Resource, Default)]
 pub struct BeatmapResource {
@@ -37,13 +37,20 @@ fn load_beatmap(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.insert_resource(BeatmapLoadState::default());
 }
 
+#[derive(Component)]
+#[require(PlaybackSettings)]
+pub struct MasterAudio;
+
+#[derive(Component)]
+pub struct Background;
+
 fn handle_beatmap_loading(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     beatmap_assets: Res<Assets<OsuFile>>,
     mut beatmap_resource: ResMut<BeatmapResource>,
     mut load_state: ResMut<BeatmapLoadState>,
-    audio_assets: Res<Assets<AudioSource>>,
+    //audio_assets: Res<Assets<AudioSource>>,
 ) {
     // Only process once when beatmap is loaded
     if load_state.loaded {
@@ -59,6 +66,7 @@ fn handle_beatmap_loading(
 
         // Spawn background sprite
         commands.spawn((
+            Background,
             Sprite::from_image(beatmap_resource.background.clone()),
             Transform::from_xyz(0.0, 0.0, 0.0),
         ));
@@ -67,11 +75,15 @@ fn handle_beatmap_loading(
         let audio_file = &beatmap.0.audio_file;
         let audio_path = format!("beatmap/{}", audio_file);
         beatmap_resource.audio = asset_server.load(&audio_path);
-
+        let playback_settings = PlaybackSettings {
+            paused: true,
+            ..default()
+        };
         // Spawn audio source
         commands.spawn((
+            MasterAudio,
             AudioPlayer::new(beatmap_resource.audio.clone()),
-            PlaybackSettings::ONCE,
+            playback_settings,
         ));
 
         load_state.loaded = true;

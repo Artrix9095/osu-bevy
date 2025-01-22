@@ -8,8 +8,7 @@ pub struct CursorPlugin;
 
 impl Plugin for CursorPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(WinitSettings::desktop_app())
-            .add_systems(Startup, setup_cursor)
+        app.add_systems(Startup, setup_cursor)
             .add_systems(Update, cursor_follow);
     }
 }
@@ -37,16 +36,13 @@ struct Cursor;
 fn setup_cursor(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut windows: Query<&mut Window, With<PrimaryWindow>>,
+    windows: Query<&mut Window, With<PrimaryWindow>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     hide_cursor(windows);
 
     // Spawn a white circle.
-    let circle = meshes.add(Circle {
-        radius: 10.0,
-        ..Default::default()
-    });
+    let circle = meshes.add(Circle { radius: 10.0 });
     commands
         .spawn((
             Mesh2d(circle),
@@ -57,6 +53,6 @@ fn setup_cursor(
 }
 
 pub fn hide_cursor(mut primary_window: Query<&mut Window, With<PrimaryWindow>>) {
-    let mut window = &mut primary_window.single_mut();
+    let window = &mut primary_window.single_mut();
     window.cursor_options.visible = false;
 }
