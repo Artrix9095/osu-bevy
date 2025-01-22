@@ -51,7 +51,7 @@ fn setup_cursor(
         .spawn((
             Mesh2d(circle),
             MeshMaterial2d(materials.add(Color::srgb(0.0, 0.0, 0.0))),
-            Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
+            Transform::from_translation(Vec3::new(0.0, 0.0, 10.0)),
         ))
         .insert(Cursor);
 }
