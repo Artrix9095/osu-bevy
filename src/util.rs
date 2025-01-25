@@ -8,6 +8,10 @@ pub fn ar_to_ms(ar: f32) -> f32 {
     }
 }
 
+pub fn od_to_ms(od: f32) -> (f32, f32, f32) {
+    (80.0 - 6.0 * od, 140.0 - 8.0 * od, 200.0 - 10.0 * od)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
