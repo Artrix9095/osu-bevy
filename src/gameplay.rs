@@ -74,7 +74,7 @@ fn spawn_hitobjects(
             match hit_object.kind {
                 HitObjectKind::Circle(circle) => {
                     commands.spawn((
-                        HitObject(hit_object.start_time as f32 - ar_to_ms(*ar), 0.0),
+                        HitObject(hit_object.start_time as f32, 0.0),
                         Mesh2d(meshes.add(Circle::new(10.0))),
                         MeshMaterial2d(materials.add(Color::srgba(0.0, 0.0, 1.0, 0.0))),
                         Transform::from_xyz(circle.pos.x, circle.pos.y, 3.0),
@@ -90,6 +90,8 @@ fn spawn_hitobjects(
 pub fn update_hitobjects(
     mut query: Query<(&mut HitObject, &mut MeshMaterial2d<ColorMaterial>)>,
     time: Res<Time>,
+    beatmap_assets: Res<Assets<OsuFile>>,
+    beatmap_resource: Res<BeatmapResource>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 
     mut game_state: ResMut<GameState>,
@@ -97,13 +99,17 @@ pub fn update_hitobjects(
     if !game_state.spawned_objects {
         return;
     }
+    if let Some(beatmap) = beatmap_assets.get(&beatmap_resource.beatmap) {
+        let ar = ar_to_ms(beatmap.0.approach_rate);
+        for (mut hit_object, mut mesh) in query.iter_mut() {
+            let object_start_time = (ar / 2.0) - hit_object.0;
+            let object_end_time = (ar / 2.0) + hit_object.0;
 
-    for (mut hit_object, mut mesh) in query.iter_mut() {
-        let delta = hit_object.0 - time.delta_secs();
-        if delta > 0.0 {
-            mesh.0 = materials.add(Color::srgba(0.0, 0.0, 1.0, 1.0));
-        } else {
-            mesh.0 = materials.add(Color::srgba(0.0, 0.0, 1.0, 0.0));
+            if time.elapsed_secs() - object_start_time >= 0.0 {
+                mesh.0 = materials.add(Color::srgba(0.0, 0.0, 1.0, 1.0));
+            } else if time.elapsed_secs() > object_end_time {
+                mesh.0 = materials.add(Color::srgba(0.0, 0.0, 1.0, 0.0));
+            }
         }
     }
 }
