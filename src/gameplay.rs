@@ -34,6 +34,8 @@ pub struct HitObject(
     /// Hit window
     pub f32,
 );
+#[derive(Component)]
+pub struct SliderBody;
 
 fn tick_game_timer(time: Res<Time>, mut game_state: ResMut<GameState>) {
     game_state.timer.tick(time.delta());
@@ -78,6 +80,15 @@ fn spawn_hitobjects(
                         Mesh2d(meshes.add(Circle::new(10.0))),
                         MeshMaterial2d(materials.add(Color::srgba(0.0, 0.0, 1.0, 0.0))),
                         Transform::from_xyz(circle.pos.x, circle.pos.y, 3.0),
+                    ));
+                }
+                HitObjectKind::Slider(slider) => {
+                    commands.spawn((
+                        HitObject(hit_object.start_time as f32, 0.0),
+                        Mesh2d(meshes.add(Circle::new(10.0))),
+                        MeshMaterial2d(materials.add(Color::srgba(0.0, 0.0, 1.0, 0.0))),
+                        Transform::from_xyz(slider.pos.x, slider.pos.y, 3.0),
+                        SliderBody,
                     ));
                 }
                 _ => {}
